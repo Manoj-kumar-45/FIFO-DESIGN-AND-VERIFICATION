@@ -48,3 +48,28 @@ module sync_fifo #(
     assign rd_en_q = rd_en & ~empty;
 
     
+    // Write logic
+
+    always_ff @(posedge clk) begin
+        if (rst) begin
+            wr_ptr <= '0;
+        end else if (wr_en_q) begin
+            mem[wr_ptr[PTR_WIDTH-1:0]] <= wr_data;
+            wr_ptr <= wr_ptr + 1'b1;
+        end
+    end
+  
+    // Read logic
+
+    always_ff @(posedge clk) begin
+        if (rst) begin
+            rd_ptr  <= '0;
+            rd_data <= '0;
+        end else if (rd_en_q) begin
+            rd_data <= mem[rd_ptr[PTR_WIDTH-1:0]];
+            rd_ptr  <= rd_ptr + 1'b1;
+        end
+    end
+
+
+
