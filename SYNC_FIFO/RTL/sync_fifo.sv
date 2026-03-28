@@ -1,8 +1,9 @@
+
 module sync_fifo #(
     parameter int DATA_WIDTH          = 8,
     parameter int DEPTH               = 16,
-    parameter int ALMOST_FULL  = DEPTH - 2,
-    parameter int ALMOST_EMPTY = 2
+    parameter int ALMOST_FULL_THRESH  = DEPTH - 2,
+    parameter int ALMOST_EMPTY_THRESH = 2
 )(
     input  logic                   clk,
     input  logic                   rst,         // synchronous, active-high
@@ -47,7 +48,7 @@ module sync_fifo #(
     assign wr_en_q = wr_en & ~full;
     assign rd_en_q = rd_en & ~empty;
 
-    
+
     // Write logic
 
     always_ff @(posedge clk) begin
@@ -72,4 +73,30 @@ module sync_fifo #(
     end
 
 
+    // Status flags
 
+    // Empty  : pointers identical (index + wrap both match)
+    // Full   : same index bits, opposite wrap bits (writer has lapped reader)
+    assign empty = (wr_ptr == rd_ptr);
+    assign full  = (wr_ptr[PTR_WIDTH-1:0] == rd_ptr[PTR_WIDTH-1:0]) &&
+                   (wr_ptr[PTR_WIDTH]     != rd_ptr[PTR_WIDTH]);
+
+  
+    assign fifo_count = wr_ptr - rd_ptr;
+
+    assign almost_full  = (fifo_count >= ($clog2(DEPTH)+1)'(ALMOST_FULL_THRESH));
+    assign almost_empty = (fifo_count <= ($clog2(DEPTH)+1)'(ALMOST_EMPTY_THRESH));
+
+   
+    // Overflow / Underflow 
+    always_ff @(posedge clk) begin
+        if (rst) begin
+            overflow  <= 1'b0;
+            underflow <= 1'b0;
+        end else begin
+            overflow  <= wr_en &  full;
+            underflow <= rd_en & empty;
+        end
+    end
+
+endmodule : sync_fifo
