@@ -1,32 +1,43 @@
-interface fifo_if #(parameter int DATA_WIDTH =8,
-                    parameter int DEPTH=16)(input logic clk);
-  logic wr_en,rd_en;
-  logic [DATA_WIDTH-1:0]wr_data;
-  logic [DATA_WIDTH-1:0]rd_data;
-  logic full,empty;
-  logic almost_full;
-  logic almost_empty;
-  logic rst;
-  logic overflow;
-  logic underflow;
-  logic [$clog2(DEPTH):0]fifo_count;
+ import uvm_pkg::*;
+`include "uvm_macros.svh"
+`include "interface_fifo.sv"
+`include "seq_item.sv"
+`include "driver.sv"
+`include "monitor.sv"
+// `include"design.sv"
+module top;
   
+  logic clk;
+  initial clk=0;
+  always #5clk=~clk;//10 unit clk generation
   
-  clocking driver_cb @(posedge clk);
-    default input #1 output #1;
-    output rst,wr_en,wr_data,rd_en;
-    input full,empty,almost_full,almost_empty,overflow,underflow,fifo_count,rd_data;
-  endclocking
+  //interface instance
   
-  clocking monitor_cb @(posedge clk);
-    default input #1;
-    input rst,wr_en,wr_data,rd_en,rd_data;
-    input full,empty,almost_full,almost_empty,overflow,underflow,fifo_count; 
-  endclocking 
+  fifo_if#(8,16)vif(clk);
   
-  modport driver_mp (clocking driver_cb,input clk);
-  modport monitor_mp (clocking monitor_cb,input clk);
-endinterface 
-      
-    
+  //dut instance 
   
+  sync_fifo#(
+    .DATA_WIDTH(8),
+    .DEPTH(16))
+   dut (.clk(clk),
+         .rst(vif.rst),
+         .wr_en(vif.wr_en),
+         .wr_data(vif.wr_data),
+         .rd_en(vif.rd_en),
+         .rd_data(vif.rd_data),
+         .full(vif.full),
+        .empty(vif.empty),
+         .almost_full(vif.almost_full),
+         .almost_empty(vif.almost_empty),
+         .overflow(vif.overflow),
+         .underflow(vif.underflow),
+         .fifo_count(vif.fifo_count));
+  
+  //Connectiongg virtual interface to uvm
+  
+  initial begin
+    uvm_config_db#(virtual fifo_if)::set(null,"*","vif",vif);
+    run_test("fifo_test");
+  end
+endmodule

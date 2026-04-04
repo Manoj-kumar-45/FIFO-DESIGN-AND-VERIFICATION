@@ -20,7 +20,7 @@ class fifo_driver extends uvm_driver #(fifo_seq_item);
     vif.driver_cb.rst<=1;
     vif.driver_cb.wr_en<=0;
     vif.driver_cb.rd_en<=0;
-    vif.driver_cb.wr-data<=0;
+    vif.driver_cb.wr_data<=0;
     
     
     repeat(3)@(vif.driver_cb);
@@ -32,8 +32,8 @@ class fifo_driver extends uvm_driver #(fifo_seq_item);
       @(vif.driver_cb);
       
       vif.driver_cb.wr_en<=item.wr_en;
-      vif.driver_cb.rd_en<=item.rd-en;
-      vif.driver_cb.wr_data<=item..wr_data;
+      vif.driver_cb.rd_en<=item.rd_en;
+      vif.driver_cb.wr_data<=item.wr_data;
     end
   endtask
 endclass
