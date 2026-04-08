@@ -1,7 +1,7 @@
 class test extends uvm_test;
   `uvm_components_utils(test)
   fifo_env env;
-  virtual fifo _if vif;
+  virtual fifo_if vif;
   
   // constructor 
   function new(string=name,uvm_test parent);
