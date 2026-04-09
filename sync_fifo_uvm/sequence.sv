@@ -19,7 +19,7 @@ class fifo_write_seq extends base_seq;
   endfunction
   
   task body();
-    fifo_write_seq req;
+    fifo_seq_item req;
     repeat(16)begin
       req=fifo_write_seq::type_id::create("req");
       start_item(req);
@@ -42,8 +42,8 @@ class fifo_read_seq extends base_seq;
     super.new(name);
   endfunction
   
-  task build();
-    fifo_read_seq req;
+  task body();
+    fifo_seq_item req;
     repeat(16)begin
       req=fifo_read_seq::type_id::create("req");
       start_item(req)
@@ -56,9 +56,27 @@ class fifo_read_seq extends base_seq;
 endclass
 
 //fifo WRITE THEN READ SEQ 
-class wr_then_rd extends base_seq;
-  `uvm_onject_utils(wr_then_rd)
-    
+
+class fifo_wr_then_rd_seq extends base_seq;
+  `uvm_object_utils(fifo_wr_then_seq)
+  fifo_write_seq wr_seq;
+  fifo_read_seq rd_seq;
   
+  
+  function new(string name="fifo_wr_then_rd_seq");
+    super.new(name);
+  endfunction
+  
+  task body();
+    wr_seq=fifo_wr_then_rd::type_id::create("wr_seq");
+    wr_seq.start(m_sequencer);
+    
+    rd_seq=fifo_wr_then_rd::type_id::create("rd_seq");
+    rd_seq.start(m_sequencer);
+  endtask
+endclass
+
+    
+      
   
   
