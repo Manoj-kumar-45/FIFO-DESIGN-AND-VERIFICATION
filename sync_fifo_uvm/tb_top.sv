@@ -1,10 +1,17 @@
  import uvm_pkg::*;
 `include "uvm_macros.svh"
+// `include"design.sv"
 `include "interface_fifo.sv"
 `include "seq_item.sv"
+`include "sequencer.sv"
+`include "sequence.sv"
 `include "driver.sv"
 `include "monitor.sv"
-// `include"design.sv"
+`include "agent.sv"
+
+
+
+
 module top;
   
   logic clk;
@@ -39,5 +46,7 @@ module top;
   initial begin
     uvm_config_db#(virtual fifo_if)::set(null,"*","vif",vif);
     run_test("fifo_test");
+ 
   end
+   
 endmodule
