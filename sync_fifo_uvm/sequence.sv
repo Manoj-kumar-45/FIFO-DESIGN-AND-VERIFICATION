@@ -73,8 +73,90 @@ class fifo_wr_then_rd_seq extends base_seq;
     
     rd_seq=fifo_wr_then_rd::type_id::create("rd_seq");
     rd_seq.start(m_sequencer);
-  endtask
+  endtaskgit
+    
 endclass
+    
+    
+    
+         //_________FLAGS TEST________________//
+//full test 
+    
+    class fifo_full_seq extends base_seq;
+      `uvm_object_utils(fifo_full_test)
+      
+      function new(string="fifo_full_seq");
+        super.new(name);
+      endfunction
+      
+      task body();
+        fifo_seq_item req;
+        repeat(20) begin
+          req=fifo_seq_item::type_id::create("req");
+          start_item(req);
+          assert(req.randomize()  with {
+          wr_en==1;
+            rd_en==0;
+          
+          });
+          finish_item(req);
+        end
+      endtask
+    endclass
+    
+    
+    //fifo empty test ::
+    
+    class fifo_empty_seq extends base_seq;
+      `uvm_object_utils(fifo_empty_seq)
+      function new(string name="fifo_empty_seq");
+        super.new(name);
+      endfunction
+      
+      task body();
+        fifo_seq_item req;
+        repeat(20)begin
+          req=fifo_seq_item::type_id::create("req");
+          start_item(req);
+          assert(req.randomize() with {
+          wr_en==0;
+            rd_en==1;
+          });
+          
+          finish_item(req);
+        end
+      endtask
+    endclass
+    
+    //FIFO OVERFLOW srq
+    
+    class fifo_overflow_seq extends base_seq;
+      `uvm_object_utils(fifo_overflow_seq)
+      
+      
+      function new(string name ="fifo_overflow_seq");
+        super.new(name);
+      endfunction
+      
+      task body();
+        fifo_seq_item req;
+        repeat(16)begin
+          req=fifo_seq_item::type_id::create("req");
+          start_item(req);
+          assert (req.randomize() with {wr_en==1;rd_en==0;});
+          finish_item(req);
+        end
+       //now applay overflow
+        repeat(5)begin
+          req=fifo_seq_item::type_id::create("req");
+          start_item(req);
+          assert(req.randomize() with {wr_en==1;rd_en==0;});
+          finish_item(req);
+        end
+      endtask
+    endclass
+          
+          
 
     
       
