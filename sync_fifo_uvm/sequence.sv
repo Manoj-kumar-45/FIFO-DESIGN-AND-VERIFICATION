@@ -1,10 +1,12 @@
 //FIFO base sequence COMMON for ALL the seq 
+import uvm_pkg::*;
+`include "uvm_macros.svh"
 
 class base_seq extends uvm_sequence #(fifo_seq_item);
   `uvm_object_utils(base_seq)
   
   function new(string name="fifo_base_seq");
-    super.new(name)
+    super.new(name);
   endfunction
 endclass
 
@@ -15,13 +17,13 @@ class fifo_write_seq extends base_seq;
   
   `uvm_object_utils(fifo_write_seq)
   function new(string name="fifo_write_seq");
-    super.new(name)
+    super.new(name);
   endfunction
   
   task body();
     fifo_seq_item req;
     repeat(16)begin
-      req=fifo_write_seq::type_id::create("req");
+      req=fifo_seq_item::type_id::create("req");
       start_item(req);
       
       assert(req.randomize() with {
@@ -37,7 +39,7 @@ endclass
 //FIFO read sequence 
 
 class fifo_read_seq extends base_seq;
-  `uvm_object_utils(fifo-read_seq)
+  `uvm_object_utils(fifo_read_seq)
   function new(string name=fifo_read_seq);
     super.new(name);
   endfunction
@@ -45,9 +47,9 @@ class fifo_read_seq extends base_seq;
   task body();
     fifo_seq_item req;
     repeat(16)begin
-      req=fifo_read_seq::type_id::create("req");
-      start_item(req)
-      assert (req.randomize() with {
+      req=fifo_seq_item::type_id::create("req");
+      start_item(req);
+      assert(req.randomize() with {
         wr_en==0;
         rd_en==1;});
       finish_item(req);
@@ -58,7 +60,7 @@ endclass
 //fifo WRITE THEN READ SEQ 
 
 class fifo_wr_then_rd_seq extends base_seq;
-  `uvm_object_utils(fifo_wr_then_seq)
+  `uvm_object_utils(fifo_wr_then_rd_seq)
   fifo_write_seq wr_seq;
   fifo_read_seq rd_seq;
   
@@ -73,7 +75,7 @@ class fifo_wr_then_rd_seq extends base_seq;
     
     rd_seq=fifo_wr_then_rd::type_id::create("rd_seq");
     rd_seq.start(m_sequencer);
-  endtaskgit
+  endtask
     
 endclass
     
@@ -167,12 +169,13 @@ endclass
       
       task body();
         fifo_seq_item req;
+        `uvm_info("SEQ","filling fifo",UVM_LOW);
         repeat(16)begin
           req=fifo_seq_item::type_id::create("req");
           start_item(req);
           assert(req.randomize() with {wr_en==1; rd_en==0;});
         end
-        
+        `uvm_info("SEQ","emptying",UVM_LOW);
         repeat(16)begin
           req=fifo_seq_item::type_id::create("req");
           start_item(req);
