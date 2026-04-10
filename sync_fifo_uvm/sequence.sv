@@ -157,8 +157,37 @@ endclass
     endclass
           
           
-
+//FIFO UNDERFLOW SEQ
     
+    class fifo_underflow_seq extendss base_seq;
+      `uvm_object_utils(fifo_underflow_seq)
+      function new (string name="fifo_under_flow");
+        super.new(name);
+      endfunction
+      
+      task body();
+        fifo_seq_item req;
+        repeat(16)begin
+          req=fifo_seq_item::type_id::create("req");
+          start_item(req);
+          assert(req.randomize() with {wr_en==1; rd_en==0;});
+        end
+        
+        repeat(16)begin
+          req=fifo_seq_item::type_id::create("req");
+          start_item(req);
+          assert(req.randomize() wirh {wr_en==0;rd_en==1;});
+          finish_item(req);
+        end
+        
+        repeat(5)begin
+          req=fifo_seq_item::type_id::create("req");
+          start_item(req);
+          assert(req.randomize() with {wr_en==0; rd_en==1;});
+          finish_item(req);
+        end
+      endtask
+    endclass
       
   
   
