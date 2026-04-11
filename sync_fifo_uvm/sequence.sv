@@ -40,7 +40,7 @@ endclass
 
 class fifo_read_seq extends base_seq;
   `uvm_object_utils(fifo_read_seq)
-  function new(string name=fifo_read_seq);
+  function new(string name="fifo_read_seq");
     super.new(name);
   endfunction
   
@@ -70,10 +70,10 @@ class fifo_wr_then_rd_seq extends base_seq;
   endfunction
   
   task body();
-    wr_seq=fifo_wr_then_rd::type_id::create("wr_seq");
+    wr_seq=fifo_write_seq::type_id::create("wr_seq");
     wr_seq.start(m_sequencer);
     
-    rd_seq=fifo_wr_then_rd::type_id::create("rd_seq");
+    rd_seq=fifo_read_seq::type_id::create("rd_seq");
     rd_seq.start(m_sequencer);
   endtask
     
@@ -85,9 +85,9 @@ endclass
 //full test 
     
     class fifo_full_seq extends base_seq;
-      `uvm_object_utils(fifo_full_test)
+      `uvm_object_utils(fifo_full_seq)
       
-      function new(string="fifo_full_seq");
+      function new(string name="fifo_full_seq");
         super.new(name);
       endfunction
       
@@ -161,7 +161,7 @@ endclass
           
 //FIFO UNDERFLOW SEQ
     
-    class fifo_underflow_seq extendss base_seq;
+    class fifo_underflow_seq extends base_seq;
       `uvm_object_utils(fifo_underflow_seq)
       function new (string name="fifo_under_flow");
         super.new(name);
@@ -179,7 +179,7 @@ endclass
         repeat(16)begin
           req=fifo_seq_item::type_id::create("req");
           start_item(req);
-          assert(req.randomize() wirh {wr_en==0;rd_en==1;});
+          assert(req.randomize() with {wr_en==0;rd_en==1;});
           finish_item(req);
         end
         
