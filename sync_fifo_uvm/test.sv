@@ -7,7 +7,7 @@ class test extends uvm_test;
   virtual fifo_if vif;
   
   // constructor 
-  function new(string name="test",uvm_test parent=null);
+  function new(string name="test",uvm_component parent=null);
     super.new(name,parent);
   endfunction
   
@@ -15,16 +15,18 @@ class test extends uvm_test;
     super.build_phase(phase);
     
     env = fifo_env::type_id::create("env",this);
-    
-    uvm_config_db#(virtual fifo_if)::set(this,"env","vif",vif);
+ // get vif from top
     if(!uvm_config_db#(virtual fifo_if)::get(this,"","vif",vif))
-      `uvm_error("TEST","vif is not found")
+      `uvm_fatal("TEST","vif is not found")                                   
+    
+    // pass vif to env
+    uvm_config_db#(virtual fifo_if)::set(this,"*","vif",vif);
    endfunction
       
 endclass
       
     
-    
+
   
   
   
