@@ -8,6 +8,11 @@
 `include "driver.sv"
 `include "monitor.sv"
 `include "agent.sv"
+`include "scoreboard.sv"
+`include "env.sv"
+`include "main_test.sv"
+`include "write_test.sv"
+`include "read_test.sv"
 
 
 
@@ -48,5 +53,11 @@ module top;
     run_test("fifo_test");
  
   end
-   
+
+  initial begin
+     $dumpfile("dump.vcd"); 
+     $dumpvars;
+  end
+  
 endmodule
+  
