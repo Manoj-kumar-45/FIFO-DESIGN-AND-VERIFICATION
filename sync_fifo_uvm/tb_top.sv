@@ -13,6 +13,7 @@
 `include "main_test.sv"
 `include "write_test.sv"
 `include "read_test.sv"
+`include "wr_then_rd_test.sv"
 
 
 
@@ -53,10 +54,9 @@ module top;
     run_test("fifo_test");
  
   end
-
   initial begin
      $dumpfile("dump.vcd"); 
-     $dumpvars;
+    $dumpvars;
   end
   
 endmodule
