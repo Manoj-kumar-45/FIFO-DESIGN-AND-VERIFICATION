@@ -51,7 +51,14 @@ module top;
   
   initial begin
     uvm_config_db#(virtual fifo_if)::set(null,"*","vif",vif);
-    run_test("fifo_test");
+    $display("uvm test is starting");
+      run_test("write_test");
+     //run_test("fifo_underflow_test");
+      //run_test("fifo_overflow_test ");
+    //run_test("fifo_empty_test");
+    // run_test("fifo_full_test");
+    // run_test("wr_then_rd");
+    //run_test("read_test");
  
   end
   initial begin
