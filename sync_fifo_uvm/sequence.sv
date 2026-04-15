@@ -174,6 +174,7 @@ endclass
           req=fifo_seq_item::type_id::create("req");
           start_item(req);
           assert(req.randomize() with {wr_en==1; rd_en==0;});
+          finish_item(req);
         end
         `uvm_info("SEQ","emptying",UVM_LOW);
         repeat(16)begin

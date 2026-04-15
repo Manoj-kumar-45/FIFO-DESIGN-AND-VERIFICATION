@@ -3,7 +3,7 @@ import uvm_pkg::*;
 
 
 
-class fifo_underflow_test extends base_test;
+class fifo_underflow_test extends test;
   `uvm_component_utils(fifo_underflow_test)
 
   fifo_underflow_seq seq;

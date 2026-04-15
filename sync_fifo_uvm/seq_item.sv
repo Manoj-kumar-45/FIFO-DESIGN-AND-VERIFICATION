@@ -28,6 +28,7 @@ class fifo_seq_item extends uvm_sequence_item;
   
   
   function string convert2string();
-    return $sformatf("wr_en=%0b wr_data=%0x0h rd_en=%0b  rd_data=0x%0h full=%0b empty=%0b count=%0b ov=%0b uv=%0b",wr_en,wr_data,rd_en,rd_data,full,empty,fifo_count,overflow,underflow);
-    endfunction
+    return $sformatf("wr_en=%0b wr_data=%0h rd_en=%0b rd_data=%0h full=%0b empty=%0b count=%0d ov=%0b uv=%0b",
+                     wr_en,wr_data,rd_en,rd_data,full,empty,fifo_count,overflow,underflow);
+  endfunction
 endclass   

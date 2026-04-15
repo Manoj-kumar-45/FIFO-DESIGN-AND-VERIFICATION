@@ -2,7 +2,7 @@ import uvm_pkg::*;
 `include "uvm_macros.svh"
 
 
-class fifo_overflow_test extends base_test;
+class fifo_overflow_test extends test;
   `uvm_component_utils(fifo_overflow_test)
 
  fifo_overflow_seq seq;

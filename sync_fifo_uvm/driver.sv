@@ -1,7 +1,7 @@
 class fifo_driver extends uvm_driver #(fifo_seq_item);
   
   `uvm_component_utils(fifo_driver)
-   virtual fifo_if.driver_mp vif;  
+   virtual fifo_if vif;  
   
   function new(string name ,uvm_component parent);
     super.new(name, parent);
@@ -10,8 +10,8 @@ class fifo_driver extends uvm_driver #(fifo_seq_item);
   function void build_phase(uvm_phase phase);
     super.build_phase(phase);
     
-    if(!uvm_config_db #(virtual fifo_if.driver_mp)::get(this ,"","vif",vif))
-      `uvm_fatal("NO_VIF","drivwer,virtual interface not found");
+    if(!uvm_config_db #(virtual fifo_if)::get(this ,"","vif",vif))
+      `uvm_fatal("NO_VIF","driver: virtual interface not found");
   endfunction
   
   
@@ -34,6 +34,7 @@ class fifo_driver extends uvm_driver #(fifo_seq_item);
       vif.driver_cb.wr_en<=item.wr_en;
       vif.driver_cb.rd_en<=item.rd_en;
       vif.driver_cb.wr_data<=item.wr_data;
+      seq_item_port.item_done();
     end
   endtask
 endclass

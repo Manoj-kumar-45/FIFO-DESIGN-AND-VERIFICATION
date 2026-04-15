@@ -24,11 +24,8 @@ interface fifo_if #(parameter int DATA_WIDTH =8,
     input full,empty,almost_full,almost_empty,overflow,underflow,fifo_count; 
   endclocking 
   
-  modport identifier (
-  input input_ports,
-  output output_ports
-  ); driver_mp (clocking driver_cb,input clk);
-  modport monitor_mp (clocking monitor_cb,input clk);
+  modport driver_mp (clocking driver_cb);
+  modport monitor_mp (clocking monitor_cb);
 endinterface 
       
     

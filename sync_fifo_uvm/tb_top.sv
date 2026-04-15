@@ -1,7 +1,7 @@
  import uvm_pkg::*;
 `include "uvm_macros.svh"
 // `include"design.sv"
-`include "interface_fifo.sv"
+`include "interface.sv"
 `include "seq_item.sv"
 `include "sequencer.sv"
 `include "sequence.sv"
@@ -10,7 +10,7 @@
 `include "agent.sv"
 `include "scoreboard.sv"
 `include "env.sv"
-`include "main_test.sv"
+`include "test.sv"
 `include "write_test.sv"
 `include "read_test.sv"
 `include "wr_then_rd_test.sv"
@@ -40,7 +40,7 @@ module top;
          .rd_en(vif.rd_en),
          .rd_data(vif.rd_data),
          .full(vif.full),
-        .empty(vif.empty),
+         .empty(vif.empty),
          .almost_full(vif.almost_full),
          .almost_empty(vif.almost_empty),
          .overflow(vif.overflow),
@@ -53,11 +53,11 @@ module top;
     uvm_config_db#(virtual fifo_if)::set(null,"*","vif",vif);
     $display("uvm test is starting");
       run_test("write_test");
-     //run_test("fifo_underflow_test");
-      //run_test("fifo_overflow_test ");
+    //run_test("fifo_underflow_test");
+    //run_test("fifo_overflow_test ");
     //run_test("fifo_empty_test");
-    // run_test("fifo_full_test");
-    // run_test("wr_then_rd");
+    //run_test("fifo_full_test");
+    //run_test("wr_then_rd");
     //run_test("read_test");
  
   end

@@ -2,7 +2,7 @@ class fifo_monitor extends uvm_monitor;
 
   `uvm_component_utils(fifo_monitor)
 
-  virtual fifo_if.monitor_mp vif;
+  virtual fifo_if vif;
   uvm_analysis_port #(fifo_seq_item) ap;
 
   function new(string name, uvm_component parent);
@@ -14,8 +14,8 @@ class fifo_monitor extends uvm_monitor;
 
     ap = new("ap", this);
 
-    if (!uvm_config_db#(virtual fifo_if.monitor_mp)::get(this, "", "vif", vif))
-      `uvm_fatal("NO_VIF", "Monitor: virtual interface not found")
+    if (!uvm_config_db#(virtual fifo_if)::get(this, "", "vif", vif))
+      `uvm_fatal("NO_VIF", "Monitor: virtual interface not found");
   endfunction
 
   task run_phase(uvm_phase phase);
