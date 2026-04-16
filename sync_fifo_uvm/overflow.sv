@@ -20,3 +20,4 @@ class fifo_overflow_test extends test;
     phase.drop_objection(this);
   endtask
 endclass
+//end of class
