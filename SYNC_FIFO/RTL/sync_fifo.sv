@@ -1,4 +1,3 @@
-
 module sync_fifo #(
     parameter int DATA_WIDTH          = 8,
     parameter int DEPTH               = 16,
@@ -26,77 +25,78 @@ module sync_fifo #(
     output logic [$clog2(DEPTH):0] fifo_count    
 );
 
-   
-    // Local parameters
- 
+
     localparam int PTR_WIDTH = $clog2(DEPTH);
 
-
-    // Memory array
-
+    // Memory
+  
     logic [DATA_WIDTH-1:0] mem [0:DEPTH-1];
 
-    // Pointers  (one extra MSB = wrap bit for full/empty discrimination)
-
+  
+    // Pointers (extra MSB for wrap detection)
+  
     logic [PTR_WIDTH:0] wr_ptr;
     logic [PTR_WIDTH:0] rd_ptr;
 
-    // Qualified enables  (hardware guard rails)
- 
+
+    // Qualified enables
+
     logic wr_en_q, rd_en_q;
 
     assign wr_en_q = wr_en & ~full;
     assign rd_en_q = rd_en & ~empty;
 
 
-    // Write logic
-
+    // WRITE LOGIC
+  
     always_ff @(posedge clk) begin
         if (rst) begin
             wr_ptr <= '0;
-        end else if (wr_en_q) begin
+        end 
+        else if (wr_en_q) begin
             mem[wr_ptr[PTR_WIDTH-1:0]] <= wr_data;
             wr_ptr <= wr_ptr + 1'b1;
         end
     end
-  
-    // Read logic
+
+
+    // READ LOGIC (REGISTERED OUTPUT FIFO)
 
     always_ff @(posedge clk) begin
         if (rst) begin
             rd_ptr  <= '0;
-            rd_data <= '0;
-        end else if (rd_en_q) begin
-            rd_data <= mem[rd_ptr[PTR_WIDTH-1:0]];
-            rd_ptr  <= rd_ptr + 1'b1;
+            rd_data <= '0;   // avoid X
+        end 
+        else begin
+            if (rd_en_q) begin
+                rd_data <= mem[rd_ptr[PTR_WIDTH-1:0]];
+                rd_ptr  <= rd_ptr + 1'b1;
+            end
         end
     end
 
+  
+    // STATUS FLAGS
+   
 
-    // Status flags
-
-    // Empty  : pointers identical (index + wrap both match)
-    // Full   : same index bits, opposite wrap bits (writer has lapped reader)
+    // Empty: pointers equal
     assign empty = (wr_ptr == rd_ptr);
+
+    // Full: same index but wrap bit different
     assign full  = (wr_ptr[PTR_WIDTH-1:0] == rd_ptr[PTR_WIDTH-1:0]) &&
                    (wr_ptr[PTR_WIDTH]     != rd_ptr[PTR_WIDTH]);
 
-  
+    // Count
     assign fifo_count = wr_ptr - rd_ptr;
 
-    assign almost_full  = (fifo_count >= ($clog2(DEPTH)+1)'(ALMOST_FULL_THRESH));
-    assign almost_empty = (fifo_count <= ($clog2(DEPTH)+1)'(ALMOST_EMPTY_THRESH));
+    // Almost flags
+    assign almost_full  = (fifo_count >= ALMOST_FULL_THRESH);
+    assign almost_empty = (fifo_count <= ALMOST_EMPTY_THRESH);
 
-   
-    // Overflow / Underflow 
-    always_ff @(posedge clk) begin
-        if (rst) begin
-            overflow  <= 1'b0;
-            underflow <= 1'b0;
-        end else begin
-            overflow  <= wr_en &  full;
-            underflow <= rd_en & empty;
-        end
-    end
+    // ----------------------------------------
+    // ERROR FLAGS
+    // ----------------------------------------
+    assign overflow  = wr_en & full;
+    assign underflow = rd_en & empty;
 
 endmodule : sync_fifo

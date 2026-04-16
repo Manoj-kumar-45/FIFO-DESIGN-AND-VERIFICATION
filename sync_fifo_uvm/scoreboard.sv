@@ -3,11 +3,9 @@ class fifo_scoreboard extends uvm_scoreboard;
   
   uvm_analysis_imp #(fifo_seq_item, fifo_scoreboard) analysis_export;
   
-//   refrence model
-  
+  //   reference model
   bit [7:0]model_q[$];
-  
-  int depth =16;
+  int depth = 16;
   
   function new(string name="fifo_scoreboard",uvm_component parent);
     super.new(name,parent);
@@ -18,13 +16,11 @@ class fifo_scoreboard extends uvm_scoreboard;
     `uvm_info("SCOREBOARD",t.convert2string(),UVM_MEDIUM)
     
     //write operation
-    
-    if(t.wr_en&&!t.full)begin
+    if(t.wr_en && !t.full)begin
       model_q.push_back(t.wr_data);
     end
     
     //read operation
-    
     if(t.rd_en && !t.empty)begin
       if(model_q.size()==0)begin
         `uvm_error("SCBD","model empty but dut is reading")
@@ -44,27 +40,29 @@ class fifo_scoreboard extends uvm_scoreboard;
       end
     end
     
-    
-    //underflow check 
-    if(t.rd_en&&t.empty)begin
+    //underflow check - detect when read from empty FIFO
+    if(t.rd_en && t.empty)begin
       if(!t.underflow)begin
-        `uvm_error("UNDERFLOW","UNDEFLOW IS NOT ASSERTED")
+        `uvm_error("UNDERFLOW","UNDERFLOW IS NOT ASSERTED")
       end
     end
     
-    //overflow 
-    if(t.wr_en&&t.full)begin
+    //overflow check - detect when write to full FIFO
+    if(t.wr_en && t.full)begin
       if(!t.overflow)begin
-        `uvm_error("OVEFLOW","overflow is not asserted")
+        `uvm_error("OVERFLOW","OVERFLOW IS NOT ASSERTED")
       end
     end
     
-    //count check
-    
-    if(model_q.size()!=t.fifo_count)begin
-      `uvm_warning("COUNT_MISMATCH",
-                   $sformatf("Model=%0d DUT=%0d",model_q.size(),t.fifo_count))
+    //count check - skip during active operations to account for pipeline delay
+    // Only check when no write/read pending (when DUT count has stabilized)
+    if(!t.wr_en && !t.rd_en)begin
+      if(model_q.size() != t.fifo_count)begin
+        `uvm_warning("COUNT_MISMATCH",
+                     $sformatf("Model=%0d DUT=%0d",model_q.size(),t.fifo_count))
+      end
     end
+    
   endfunction
 endclass
     

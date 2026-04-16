@@ -32,7 +32,7 @@ module top;
 
   fifo_if#(8,16)vif(clk);
 
-  //dut instance 
+  //dut instance
 
   sync_fifo#(
     .DATA_WIDTH(8),
