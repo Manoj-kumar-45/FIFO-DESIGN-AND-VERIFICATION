@@ -22,7 +22,7 @@ class fifo_write_seq extends base_seq;
   
   task body();
     fifo_seq_item req;
-    repeat(16)begin
+    repeat(20)begin
       req=fifo_seq_item::type_id::create("req");
       start_item(req);
       
